@@ -5,27 +5,8 @@ import {
   TrendingUp, BarChart, CreditCard, TrendingDown, PackagePlus, Star, 
   ArrowUpCircle, ArrowDownCircle, PlusCircle 
 } from 'lucide-react';
-
 // Interface for dashboard statistics
-interface DashboardStats {
-  totalProducts: number;
-  totalEmployees: number;
-  totalBranches: number;
-  stockValue: number;
-  soldProducts: number;
-  expiryProducts: number;
-  deletedProducts: number;
-  totalProfit: number;
-  totalRevenue: number;
-  outstandingPayments: number;
-  loss: number;
-  mostStockedProduct: { name: string; units: number };
-  leastStockedProduct: { name: string; units: number };
-  mostSoldProduct: { name: string; units: number };
-  productsAddedThisWeek: number;
-  activeSuppliers: number;
-}
-
+import { DashboardStats } from '@/types';
 // Mock data for the dashboard
 const mockStats: DashboardStats = {
   totalProducts: 1500,
