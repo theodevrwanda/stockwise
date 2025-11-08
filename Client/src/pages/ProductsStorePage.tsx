@@ -66,17 +66,22 @@ const ProductsStorePage: React.FC = () => {
   const { toast } = useToast();
   const [products, setProducts] = useState<Product[]>(mockProducts);
   const [searchTerm, setSearchTerm] = useState('');
-  const [categoryFilter, setCategoryFilter] = useState<string>('All');
+  const [categoryFiler, setCategoryFilter] = useState<string>('All');
+
+  // Dialog States
   const [addDialogOpen, setAddDialogOpen] = useState(false);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [sellDialogOpen, setSellDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+
+  // Selected Product
   const [productToEdit, setProductToEdit] = useState<Product | null>(null);
   const [productToSell, setProductToSell] = useState<Product | null>(null);
   const [productToDelete, setProductToDelete] = useState<Product | null>(null);
+
   const [actionLoading, setActionLoading] = useState(false);
 
-  // Form States
+  // Add Product Form
   const [newProduct, setNewProduct] = useState({
     name: '',
     category: '',
@@ -86,6 +91,7 @@ const ProductsStorePage: React.FC = () => {
     expiryDate: '',
   });
 
+  // Sell Form
   const [sellForm, setSellForm] = useState<SellForm>({
     quantity: '',
     sellingPrice: '',
@@ -96,6 +102,7 @@ const ProductsStorePage: React.FC = () => {
     totalAmount: 0,
   });
 
+  // Calculate total amount live
   useEffect(() => {
     const qty = Number(sellForm.quantity);
     const price = Number(sellForm.sellingPrice);
@@ -117,11 +124,12 @@ const ProductsStorePage: React.FC = () => {
       p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       p.category.toLowerCase().includes(searchTerm.toLowerCase())
     )
-    .filter(p => categoryFilter === 'All' || p.category === categoryFilter);
+    .filter(p => categoryFiler === 'All' || p.category === categoryFiler);
 
+  // Add Product
   const handleAddProduct = () => {
     if (!newProduct.name || !newProduct.category || !newProduct.quantity || !newProduct.costPrice) {
-      toast({ title: 'Error', description: 'Please fill all required fields.', variant: 'destructive' });
+      toast({ title: 'Error', description: 'All fields are required.', variant: 'destructive' });
       return;
     }
 
@@ -129,7 +137,7 @@ const ProductsStorePage: React.FC = () => {
     const cost = Number(newProduct.costPrice);
 
     if (qty <= 0 || cost <= 0) {
-      toast({ title: 'Error', description: 'Quantity and cost price must be greater than 0.', variant: 'destructive' });
+      toast({ title: 'Error', description: 'Quantity and cost must be > 0.', variant: 'destructive' });
       return;
     }
 
@@ -158,6 +166,7 @@ const ProductsStorePage: React.FC = () => {
     setActionLoading(false);
   };
 
+  // Update Product
   const handleUpdateProduct = () => {
     if (!productToEdit) return;
 
@@ -165,7 +174,7 @@ const ProductsStorePage: React.FC = () => {
     const cost = Number(productToEdit.costPrice);
 
     if (!productToEdit.name || !productToEdit.category || qty <= 0 || cost <= 0) {
-      toast({ title: 'Error', description: 'All fields required and must be valid.', variant: 'destructive' });
+      toast({ title: 'Error', description: 'Invalid data.', variant: 'destructive' });
       return;
     }
 
@@ -190,10 +199,11 @@ const ProductsStorePage: React.FC = () => {
 
     setEditDialogOpen(false);
     setProductToEdit(null);
-    toast({ title: 'Success', description: 'Product updated!' });
+    toast({ title: 'Updated', description: 'Product saved!' });
     setActionLoading(false);
   };
 
+  // Delete Product
   const handleDelete = () => {
     if (!productToDelete) return;
     setActionLoading(true);
@@ -204,20 +214,23 @@ const ProductsStorePage: React.FC = () => {
     setActionLoading(false);
   };
 
+  // Sell Product
   const handleSell = () => {
     if (!productToSell) return;
 
     const qty = Number(sellForm.quantity);
-    if (qty <= 0 || qty > productToSell.quantity) {
-      setSellForm(prev => ({ ...prev, error: `Available: ${productToSell.quantity} ${productToSell.unit}` }));
+    const price = Number(sellForm.sellingPrice);
+
+    if (qty > productToSell.quantity) {
+      setSellForm(prev => ({ ...prev, error: `Only ${productToSell.quantity} ${productToSell.unit} available` }));
       return;
     }
-    if (Number(sellForm.sellingPrice) <= 0) {
-      setSellForm(prev => ({ ...prev, error: 'Enter valid selling price' }));
+    if (qty <= 0 || price <= 0) {
+      setSellForm(prev => ({ ...prev, error: 'Enter valid quantity and price' }));
       return;
     }
     if (sellForm.paymentMethod === 'Credit' && (!sellForm.customerName?.trim() || !sellForm.customerPhone?.trim())) {
-      setSellForm(prev => ({ ...prev, error: 'Customer name & phone required for credit' }));
+      setSellForm(prev => ({ ...prev, error: 'Customer name and phone required' }));
       return;
     }
 
@@ -230,6 +243,7 @@ const ProductsStorePage: React.FC = () => {
       )
     );
 
+    toast({ title: 'Sold!', description: `Sold ${qty} ${productToSell.unit} of ${productToSell.name}` });
     setSellDialogOpen(false);
     setProductToSell(null);
     setSellForm({
@@ -241,25 +255,24 @@ const ProductsStorePage: React.FC = () => {
       error: '',
       totalAmount: 0,
     });
-    toast({ title: 'Sold!', description: `Sold ${qty} ${productToSell.unit}` });
     setActionLoading(false);
   };
 
   return (
-    <div className="space-y-6 p-6 bg-gray-50 dark:bg-gray-950 min-h-screen">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 p-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
         <div>
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Store Inventory</h1>
-          <p className="text-gray-600 dark:text-gray-400">Manage products easily</p>
+          <p className="text-gray-600 dark:text-gray-400">Simple & powerful product management</p>
         </div>
         <Button onClick={() => setAddDialogOpen(true)} size="lg">
           <Plus className="mr-2 h-5 w-5" /> Add Product
         </Button>
       </div>
 
-      {/* Filters */}
-      <div className="flex flex-col sm:flex-row gap-4">
+      {/* Search & Filter */}
+      <div className="flex flex-col sm:flex-row gap-4 mb-6">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
           <Input
@@ -268,7 +281,7 @@ const ProductsStorePage: React.FC = () => {
             className="pl-10 bg-white dark:bg-gray-800"
           />
         </div>
-        <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+        <Select value={categoryFiler} onValueChange={setCategoryFilter}>
           <SelectTrigger className="w-48 bg-white dark:bg-gray-800">
             <SelectValue />
           </SelectTrigger>
@@ -280,11 +293,11 @@ const ProductsStorePage: React.FC = () => {
         </Select>
       </div>
 
-      {/* Table - No background, clean white */}
+      {/* Table - No background */}
       <div className="border rounded-lg overflow-hidden">
         <Table>
           <TableHeader>
-            <TableRow className="bg-transparent hover:bg-transparent">
+            <TableRow className="bg-transparent">
               <TableHead className="font-bold">Name</TableHead>
               <TableHead className="font-bold">Category</TableHead>
               <TableHead className="font-bold">Quantity</TableHead>
@@ -296,7 +309,7 @@ const ProductsStorePage: React.FC = () => {
           </TableHeader>
           <TableBody>
             {filteredProducts.map(product => (
-              <TableRow key={product.id} className="hover:bg-gray-50 dark:hover:bg-gray-800 transition-none">
+              <TableRow key={product.id} className="hover:bg-gray-50 dark:hover:bg-gray-800">
                 <TableCell className="font-medium">{product.name}</TableCell>
                 <TableCell>{product.category}</TableCell>
                 <TableCell>
@@ -309,44 +322,13 @@ const ProductsStorePage: React.FC = () => {
                 <TableCell>{formatDate(product.expiryDate)}</TableCell>
                 <TableCell>
                   <div className="flex gap-2">
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => {
-                        setProductToEdit(product);
-                        setEditDialogOpen(true);
-                      }}
-                    >
+                    <Button size="sm" variant="outline" onClick={() => { setProductToEdit(product); setEditDialogOpen(true); }}>
                       <Edit className="h-4 w-4" />
                     </Button>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      className="text-red-600 border-red-300 hover:bg-red-50"
-                      onClick={() => {
-                        setProductToDelete(product);
-                        setDeleteDialogOpen(true);
-                      }}
-                    >
+                    <Button size="sm" variant="outline" className="text-red-600 border-red-300 hover:bg-red-50" onClick={() => { setProductToDelete(product); setDeleteDialogOpen(true); }}>
                       <Trash2 className="h-4 w-4" />
                     </Button>
-                    <Button
-                      size="sm"
-                      onClick={() => {
-                        setProductToSell(product);
-                        setSellForm({
-                          quantity: '',
-                          sellingPrice: '',
-                          paymentMethod: 'Paid',
-                          customerName: '',
-                          customerPhone: '',
-                          error: '',
-                          totalAmount: 0,
-                        });
-                        setSellDialogOpen(true);
-                      }}
-                      disabled={product.quantity === 0}
-                    >
+                    <Button size="sm" onClick={() => { setProductToSell(product); setSellForm({ quantity: '', sellingPrice: '', paymentMethod: 'Paid', customerName: '', customerPhone: '', error: '', totalAmount: 0 }); setSellDialogOpen(true); }} disabled={product.quantity === 0}>
                       <ShoppingCart className="h-4 w-4 mr-1" /> Sell
                     </Button>
                   </div>
@@ -363,9 +345,7 @@ const ProductsStorePage: React.FC = () => {
       {/* Add Dialog */}
       <Dialog open={addDialogOpen} onOpenChange={setAddDialogOpen}>
         <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Add New Product</DialogTitle>
-          </DialogHeader>
+          <DialogHeader><DialogTitle>Add New Product</DialogTitle></DialogHeader>
           <div className="grid gap-4 py-4">
             <div><Label>Product Name</Label><Input value={newProduct.name} onChange={e => setNewProduct({ ...newProduct, name: e.target.value })} /></div>
             <div><Label>Category</Label><Input value={newProduct.category} onChange={e => setNewProduct({ ...newProduct, category: e.target.value })} /></div>
@@ -425,28 +405,92 @@ const ProductsStorePage: React.FC = () => {
         <DialogContent>
           <DialogHeader><DialogTitle>Sell: {productToSell?.name}</DialogTitle></DialogHeader>
           <div className="space-y-4">
-            <p>Available: <strong>{productToSell?.quantity} {productToSell?.unit}</strong></p>
-            <div><Label>Quantity</Label><Input type="number" value={sellForm.quantity} onChange={e => setSellForm({ ...sellForm, quantity: Number(e.target.value) || '', error: '' })} /></div>
-            <div><Label>Selling Price</Label><Input type="number" value={sellForm.sellingPrice} onChange={e => setSellForm({ ...sellForm, sellingPrice: Number(e.target.value) || '', error: '' })} /></div>
-            {sellForm.totalAmount > 0 && <p className="font-bold text-lg">Total: {formatAmount(sellForm.totalAmount)}</p>}
-            <div><Label>Payment</Label>
-              <Select value={sellForm.paymentMethod} onValueChange={v => setSellForm({ ...sellForm, paymentMethod: v as 'Paid' | 'Credit', error: '' })}>
+            <p className="text-sm text-gray-600">Available: <strong>{productToSell?.quantity} {productToSell?.unit}</strong></p>
+
+            <div>
+              <Label>Quantity to Sell</Label>
+              <Input
+                type="number"
+                value={sellForm.quantity}
+                onChange={e => {
+                  const val = e.target.value === '' ? '' : Number(e.target.value);
+                  setSellForm(prev => ({
+                    ...prev,
+                    quantity: val,
+                    error: val === '' ? '' :
+                           val <= 0 ? 'Quantity must be > 0' :
+                           val > (productToSell?.quantity || 0)
+                             ? `Only ${productToSell?.quantity} ${productToSell?.unit} available`
+                             : ''
+                  }));
+                }}
+                min="1"
+              />
+            </div>
+
+            <div>
+              <Label>Selling Price (RWF)</Label>
+              <Input
+                type="number"
+                value={sellForm.sellingPrice}
+                onChange={e => {
+                  const price = e.target.value === '' ? '' : Number(e.target.value);
+                  setSellForm(prev => ({
+                    ...prev,
+                    sellingPrice: price,
+                    error: prev.error || (price === '' ? '' : price <= 0 ? 'Price must be > 0' : '')
+                  }));
+                }}
+              />
+            </div>
+
+            {sellForm.totalAmount > 0 && (
+              <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-center">
+                <p className="font-bold text-lg">Total: {formatAmount(sellForm.totalAmount)}</p>
+              </div>
+            )}
+
+            <div>
+              <Label>Payment Method</Label>
+              <Select value={sellForm.paymentMethod} onValueChange={v => setSellForm({ ...sellForm, paymentMethod: v as 'Paid' | 'Credit' })}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent><SelectItem value="Paid">Paid</SelectItem><SelectItem value="Credit">Credit</SelectItem></SelectContent>
+                <SelectContent>
+                  <SelectItem value="Paid">Paid</SelectItem>
+                  <SelectItem value="Credit">Credit</SelectItem>
+                </SelectContent>
               </Select>
             </div>
+
             {sellForm.paymentMethod === 'Credit' && (
               <>
                 <div><Label>Customer Name</Label><Input value={sellForm.customerName} onChange={e => setSellForm({ ...sellForm, customerName: e.target.value })} /></div>
                 <div><Label>Phone Number</Label><Input value={sellForm.customerPhone} onChange={e => setSellForm({ ...sellForm, customerPhone: e.target.value })} /></div>
               </>
             )}
-            {sellForm.error && <p className="text-red-500 text-sm">{sellForm.error}</p>}
+
+            {sellForm.error && (
+              <div className="p-3 bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 rounded-lg text-center">
+                <p className="text-red-600 dark:text-red-400 font-medium text-sm">{sellForm.error}</p>
+              </div>
+            )}
           </div>
+
           <DialogFooter>
             <Button variant="outline" onClick={() => setSellDialogOpen(false)}>Cancel</Button>
-            <Button onClick={handleSell} disabled={actionLoading || !!sellForm.error || sellForm.quantity === '' || sellForm.sellingPrice === ''}>
-              {actionLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />} Sell
+            <Button
+              onClick={handleSell}
+              disabled={
+                actionLoading ||
+                sellForm.quantity === '' ||
+                sellForm.sellingPrice === '' ||
+                sellForm.quantity <= 0 ||
+                sellForm.sellingPrice <= 0 ||
+                !!sellForm.error ||
+                (sellForm.paymentMethod === 'Credit' && (!sellForm.customerName?.trim() || !sellForm.customerPhone?.trim()))
+              }
+            >
+              {actionLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              Confirm Sale
             </Button>
           </DialogFooter>
         </DialogContent>
