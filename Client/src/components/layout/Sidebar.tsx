@@ -26,7 +26,6 @@ const sidebarItems = [
   { icon: BarChart2, label: 'Ibikorwa By’Ubucuruzi', path: '/dashboard' },
   { icon: Package, label: 'Ibicuruzwa Muri Stock', path: '/products' },
   { icon: ShoppingCart, label: 'Ibicuruzwa Byagurishijwe', path: '/products-sold' },
-  { icon: ArchiveRestore, label: 'Ibicuruzwa Byagaruwe', path: '/products-restored' },
   { icon: User, label: 'Umwirondoro Wanjye', path: '/profile' },
   { icon: FileText, label: 'Raporo', path: '/reports' },
   { icon: Trash2, label: 'Byasibwe', path: '/trash' },

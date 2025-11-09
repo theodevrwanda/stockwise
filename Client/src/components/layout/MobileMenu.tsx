@@ -22,7 +22,6 @@ const sidebarItems = [
   { icon: Bell, label: 'Dashboard', path: '/dashboard' },
   { icon: Users, label: 'Products Store', path: '/products' },
   { icon: Calendar, label: 'Products Sold', path: '/products-sold' },
-  { icon: FileText, label: 'Products Restored', path: '/products-restored' },
   { icon: User, label: 'My Profile', path: '/profile' },
   { icon: FileText, label: 'Reports', path: '/reports' },
   { icon: Folder, label: 'Trash', path: '/trash' },
