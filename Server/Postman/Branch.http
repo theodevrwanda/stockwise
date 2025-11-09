@@ -1,0 +1,28 @@
+### create branch 
+POST http://127.0.0.1:8000/branches/
+Content-Type: application/json
+
+{
+    "name": "nyabungongo",
+    "district": "D",
+    "sector": "Sector Name",
+    "cell": "Cell Name",
+    "village": "Village Name"
+}
+### update branch 
+PUT  http://127.0.0.1:8000/branches/6910beed011720c77af2c575
+Content-Type: application/json
+
+{
+    "name": "Kigali",
+    "district": "District Name",
+    "sector": "Sector Name",
+    "cell": "Cell Name",
+    "village": "Village Name"
+}
+### get all branches 
+GET http://127.0.0.1:8000/branches/
+### get single by id 
+GET http://127.0.0.1:8000/branches/6910bdd4011720c77af2c574
+### delete branch 
+DELETE http://127.0.0.1:8000/branches/6910bdd4011720c77af2c574
