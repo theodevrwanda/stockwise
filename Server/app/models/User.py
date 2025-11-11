@@ -1,32 +1,18 @@
 from pydantic import BaseModel, EmailStr, Field
 from typing import Optional
-from bson import ObjectId
 from datetime import datetime
-
-class UserBase(BaseModel):
-    username: str = Field(..., min_length=3, max_length=50)
+class UserModel(BaseModel):
+    id: Optional[str] = None 
+    # User Info
+    first_name: str
+    last_name: str
     email: EmailStr
-    firstName: str
-    lastName: str
-    phone: str = Field(..., regex=r"^\+?[1-9]\d{1,14}$")
-    district: str
-    sector: str
-    cell: str
-    village: str
-    role: str = Field("staff", pattern="^(admin|staff)$")
-    branch: Optional[str] = None  # ObjectId as string
-    imagephoto: str = "https://example.com/default-user-photo.png"
-    isActive: bool = False
-
-    class Config:
-        json_encoders = {
-            ObjectId: str
-        }
-
-class UserCreate(UserBase):
-    password: str = Field(..., min_length=6)
-
-class UserInDB(UserBase):
-    _id: str
-    createdAt: datetime
-    updatedAt: datetime
+    phone: str = Field(..., pattern=r"^\+250[7][2,3,8,9]\d{7}$")
+    gender: str = Field(..., pattern="^(male|female|other)$")
+    role: str = Field(..., pattern="^(admin|staff)$")
+    branch_id: Optional[str] = None
+    business_id: str
+    is_active: bool = True
+    photo: str = "https://api.dicebear.com/7.x/avataaars/svg?seed={{first_name}}{{last_name}}"
+    created_at: Optional[datetime] = None
+    updated_at: Optional[datetime] = None

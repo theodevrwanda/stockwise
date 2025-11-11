@@ -70,11 +70,6 @@ def make_email(to: str, subject: str, html: str) -> str:
 # MAIN SENDER FUNCTION (as you requested)
 # ==========================================
 async def sender(to: str, subject: str, html: str):
-    """
-    Send email using Gmail API + OAuth2
-    Exact same behavior as your Node.js `sendMail`
-    Now named: sender()
-    """
     if not all([to, subject, html]):
         error = "to, subject, html are required"
         logger.error(f"Sender failed → {error}")

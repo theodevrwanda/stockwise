@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from app.config.Database import db, check_connection
 from app.routes import Branch  # import your branch router
+from app.routes import CreateAccount
 import asyncio
 
 app = FastAPI(title="Stockwise Backend")
@@ -17,3 +18,4 @@ async def root():
 
 # Include routers
 app.include_router(Branch.router)
+app.include_router(CreateAccount.router)

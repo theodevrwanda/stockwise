@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, status
 from app.models.Branch import BranchModel
 from app.schemas.Branch import BranchCreate, BranchUpdate
-from app.config.Database import db
+from app.config.Database import db , Branches
 from bson import ObjectId
 from typing import List
 import logging
@@ -16,7 +16,6 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/branches", tags=["Branches"])
-BRANCH_COLLECTION = db.get_collection("branches")
 
 # --------------------------
 # Helper function
@@ -39,7 +38,7 @@ def branch_helper(branch) -> dict:
 async def create_branch(branch: BranchCreate):
     logger.info(f"CREATE request received for branch: {branch.name}")
     
-    existing_branch = await BRANCH_COLLECTION.find_one({"name": branch.name})
+    existing_branch = await Branches.find_one({"name": branch.name})
     if existing_branch:
         logger.warning(f"Branch creation failed - Name already exists: {branch.name}")
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Branch already exists")
@@ -47,7 +46,7 @@ async def create_branch(branch: BranchCreate):
     branch_dict = branch.dict()
     logger.info(f"Inserting new branch into database: {branch_dict}")
     
-    result = await BRANCH_COLLECTION.insert_one(branch_dict)
+    result = await Branches.insert_one(branch_dict)
     
     if result.inserted_id:
         logger.info(f"Branch created successfully | ID: {str(result.inserted_id)} | Name: {branch.name}")
@@ -65,7 +64,7 @@ async def get_branches():
     
     branches = []
     count = 0
-    async for b in BRANCH_COLLECTION.find():
+    async for b in Branches.find():
         branches.append(branch_helper(b))
         count += 1
     
@@ -83,7 +82,7 @@ async def get_branch(branch_id: str):
         logger.warning(f"Invalid branch ID format: {branch_id}")
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid branch ID")
 
-    branch = await BRANCH_COLLECTION.find_one({"_id": ObjectId(branch_id)})
+    branch = await Branches.find_one({"_id": ObjectId(branch_id)})
     if not branch:
         logger.warning(f"Branch not found | ID: {branch_id}")
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Branch not found")
@@ -108,7 +107,7 @@ async def update_branch(branch_id: str, branch: BranchUpdate):
         logger.warning("Update request with no fields to update")
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="No fields to update")
 
-    result = await BRANCH_COLLECTION.update_one(
+    result = await Branches.update_one(
         {"_id": ObjectId(branch_id)}, {"$set": update_data}
     )
     
@@ -130,7 +129,7 @@ async def delete_branch(branch_id: str):
         logger.warning(f"Invalid branch ID format during delete: {branch_id}")
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid branch ID")
 
-    result = await BRANCH_COLLECTION.delete_one({"_id": ObjectId(branch_id)})
+    result = await Branches.delete_one({"_id": ObjectId(branch_id)})
     
     if result.deleted_count == 0:
         logger.warning(f"Delete failed - Branch not found | ID: {branch_id}")
