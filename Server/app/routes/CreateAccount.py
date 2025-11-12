@@ -40,10 +40,7 @@ async def register_account(
     user_photo: Optional[UploadFile] = File(None, description="Optional user profile photo"),
     business_photo: Optional[UploadFile] = File(None, description="Optional business logo/photo")
 ):
-    """
-    PUBLIC ENDPOINT - NO AUTH REQUIRED
-    Creates business + admin user with full logging.
-    """
+    
     try:
         # Trim inputs
         business_name = business_name.strip()

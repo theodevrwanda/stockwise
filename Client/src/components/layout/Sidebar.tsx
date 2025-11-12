@@ -4,7 +4,6 @@ import {
   BarChart2,
   Package,
   ShoppingCart,
-  ArchiveRestore,
   User,
   FileText,
   Trash2,
@@ -12,8 +11,7 @@ import {
   Users,
   ChevronLeft,
   ChevronRight,
-  LogOut,
-  Star
+  LogOut
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -48,27 +46,33 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, onToggle, className }) => 
     ? fullName.split(' ').map((n) => n[0]).join('').substring(0, 2).toUpperCase()
     : 'OF';
   const profileImage = user?.profileImage || '';
+  const businessName = user?.business?.name;
+  const accountPlan = user?.business?.plan || 'free'
 
   return (
     <div
       className={cn(
         'bg-sidebar border-r border-sidebar-border transition-all duration-300 flex flex-col',
         collapsed ? 'w-16' : 'w-64',
-        'h-screen',
-        'sticky top-0 left-0 z-40',
+        'h-screen sticky top-0 left-0 z-40',
         className
       )}
     >
-      {/* 🔹 Header with logo icon */}
-      <div className="flex items-center justify-between p-3 border-b border-sidebar-border min-h-[60px] flex-shrink-0">
+      {/* Header with logo */}
+      <div className="flex items-center justify-between p-3 border-b border-sidebar-border min-h-[60px]">
         {!collapsed && (
           <div className="flex items-center space-x-2">
             <div className="w-10 h-10 rounded-full bg-indigo-600 flex items-center justify-center">
-              <Package className="text-white" size={20} /> {/* Stock icon as logo */}
+              <Package className="text-white" size={20} />
             </div>
-            <span className="font-semibold text-sidebar-foreground text-sm">
-              StockWise
-            </span>
+            <div className="flex flex-col">
+              <span className="font-semibold text-sidebar-foreground text-sm">StockWise</span>
+              {businessName && (
+                <span className="text-xs text-indigo-600 dark:text-indigo-300 font-medium truncate max-w-[120px]">
+                  {businessName}
+                </span>
+              )}
+            </div>
           </div>
         )}
         <Button
@@ -105,32 +109,60 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, onToggle, className }) => 
           ))}
         </nav>
 
-        {/* 🔹 Upgrade Banner */}
+        {/* 🔹 Dynamic Plan Section */}
         {!collapsed && (
           <div className="relative overflow-hidden rounded-xl bg-gradient-to-br from-indigo-600 via-blue-500 to-blue-400 text-white p-4 mt-6 shadow-md">
             <div className="absolute inset-0 opacity-10 bg-[url('/patterns/dots.svg')] bg-cover" />
             <div className="relative z-10 text-center">
-              <Star className="mx-auto mb-2" size={22} />
-              <h4 className="font-semibold text-sm">Kora Upgrade yawe 📈</h4>
-              <p className="text-xs text-blue-100 mt-1 mb-3">
-                Fata version yisumbuye kugira ngo ubone ubushobozi burenze bwo gucunga ubucuruzi bwawe.
-              </p>
-              <NavLink to="/upgrade-plan">
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  className="bg-white text-indigo-700 hover:bg-indigo-100 text-xs font-semibold rounded-md"
-                >
-                  Fungura Paketi Nshya
-                </Button>
-              </NavLink>
+              {user && (
+                <Avatar className="mx-auto mb-2 w-10 h-10 border-2 border-white overflow-hidden">
+                  <AvatarImage src={profileImage} className="object-cover w-full h-full" />
+                  <AvatarFallback className="text-sm font-bold text-indigo-700 bg-white">
+                    {initials}
+                  </AvatarFallback>
+                </Avatar>
+              )}
+              <h4 className="font-semibold text-sm">Muraho 👋 {user?.firstName}</h4>
+              {accountPlan === 'free' ? (
+                <>
+                  <p className="text-xs text-blue-100 mt-1 mb-3">
+                    Fata version yisumbuye kugira ngo ubone ubushobozi burenze bwo gucunga
+                    ubucuruzi bwawe.
+                  </p>
+                  <NavLink to="/upgrade-plan">
+                    <Button
+                      variant="secondary"
+                      size="sm"
+                      className="bg-white text-indigo-700 hover:bg-indigo-100 text-xs font-semibold rounded-md"
+                    >
+                      Fungura Paketi Nshya
+                    </Button>
+                  </NavLink>
+                </>
+              ) : (
+                <>
+                  <p className="text-xs text-blue-100 mt-1 mb-3">
+                    andikira ubuyobozi niba ufite ikibazo, icyifuzo cyangwa ikibazo wabonye
+                    muri sisitemu.
+                  </p>
+                  <NavLink to="/report">
+                    <Button
+                      variant="secondary"
+                      size="sm"
+                      className="bg-white text-indigo-700 hover:bg-indigo-100 text-xs font-semibold rounded-md"
+                    >
+                      Tanga Raporo
+                    </Button>
+                  </NavLink>
+                </>
+              )}
             </div>
           </div>
         )}
       </ScrollArea>
 
-      {/* 🔹 User Info & Logout */}
-      <div className="p-3 border-t border-sidebar-border flex-shrink-0">
+      {/* Footer (User Info + Logout) */}
+      <div className="p-3 border-t border-sidebar-border">
         {!collapsed && user && (
           <div className="flex items-center space-x-2 mb-2 p-2">
             <Avatar className="w-6 h-6 overflow-hidden">
@@ -147,7 +179,6 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, onToggle, className }) => 
             </div>
           </div>
         )}
-
         <Button
           variant="ghost"
           size="sm"
