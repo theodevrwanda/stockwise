@@ -20,6 +20,8 @@ import TrashPage from "@/pages/TrashPage";
 import ManageBranchPage from "@/pages/ManageBranchPage";
 import ManageEmployeesPage from "@/pages/ManageEmployeesPage";
 import NotFound from "./pages/NotFound";
+import Index from "./pages/Index";
+import './App.css'
 
 const queryClient = new QueryClient();
 
@@ -35,6 +37,7 @@ const App = () => (
               <BrowserRouter>
               <Routes>
                 <Route path="/login" element={<LoginPage />} />
+                <Route path="/home" element={<Index />} />
                 <Route
                   path="/"
                   element={

@@ -109,7 +109,7 @@ const ProfilePage: React.FC = () => {
   const [reportSettings, setReportSettings] = useState<ReportSettings>({
     frequency: 'daily',
     time: '08:00',
-    branches: isAdmin ? [] : [assignedBranch],
+    branches: isAdmin ? [] : (typeof assignedBranch === 'string' ? [assignedBranch] : []),
     productStatuses: [],
     recipientEmails: [],
   });
@@ -1019,7 +1019,7 @@ const ProfilePage: React.FC = () => {
                   ) : (
                     <div className="flex items-center space-x-2 p-2 bg-gray-50 dark:bg-gray-800 rounded-md text-gray-900 dark:text-white">
                       <MapPin size={16} className="text-gray-500" />
-                      <span>{assignedBranch || 'No branch assigned'}</span>
+                      <span>{typeof assignedBranch === 'string' ? assignedBranch : (assignedBranch?.name || 'No branch assigned')}</span>
                     </div>
                   )}
                   <div className="flex flex-wrap gap-2 mt-2">

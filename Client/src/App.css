@@ -40,3 +40,14 @@
 .read-the-docs {
   color: #888;
 }
+/* Hero Scroll */
+@keyframes scroll-up {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-50%); }
+}
+.animate-scroll-up {
+  animation: scroll-up 25s linear infinite;
+}
+.animate-scroll-up:hover {
+  animation-play-state: paused;
+}

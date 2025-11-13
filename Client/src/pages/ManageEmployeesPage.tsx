@@ -979,7 +979,7 @@ const ManageEmployeesPage: React.FC = () => {
                 <Select
                   value={currentEmployee?.role || ''}
                   onValueChange={value =>
-                    setCurrentEmployee(prev => (prev ? { ...prev, role: value } : null))
+                    setCurrentEmployee(prev => (prev ? { ...prev, role: value as "admin" | "staff" } : null))
                   }
                   disabled={actionLoading}
                 >

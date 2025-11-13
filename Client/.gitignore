@@ -7,12 +7,25 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+# Dependencies
 node_modules
+__pycache__/
+*.py[cod]
+*.so
+*.egg-info/
 dist
 dist-ssr
-*.local
+build/
+.env
+.env.local
 
-# Editor directories and files
+# Ignore environment files in both apps
+Client/.env
+Client/.env.local
+Server/.env
+Server/.env.local
+
+# IDE & System files
 .vscode/*
 !.vscode/extensions.json
 .idea
@@ -22,3 +35,12 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+*.sqlite3
+*.db
+
+# Python virtual environments
+venv/
+.env/
+.venv/
+ENV/
+env/

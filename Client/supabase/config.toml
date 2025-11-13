@@ -1,0 +1,4 @@
+project_id = "bugspvjlymhqztdqxrjx"
+
+[functions.customer-support-chat]
+verify_jwt = false
